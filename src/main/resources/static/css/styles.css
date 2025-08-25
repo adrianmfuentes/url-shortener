@@ -1,0 +1,27 @@
+body {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.footer {
+    margin-top: auto;
+}
+
+.card {
+    border-radius: 15px;
+    border: none;
+}
+
+.form-control:focus {
+    box-shadow: none;
+    border-color: #0d6efd;
+}
+
+.btn-primary {
+    transition: all 0.3s ease;
+}
+
+.btn-primary:hover {
+    transform: translateY(-2px);
+}
