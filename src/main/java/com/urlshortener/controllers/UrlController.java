@@ -2,6 +2,7 @@ package com.urlshortener.controllers;
 
 import com.urlshortener.services.interfaces.UrlService;
 import com.urlshortener.validators.UrlValidator;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -14,6 +15,9 @@ public class UrlController {
 
     private final UrlService urlService;
     private final UrlValidator urlValidator;
+
+    @Value("${app.base-url}")
+    private String baseUrl;
 
     public UrlController(UrlService urlService, UrlValidator urlValidator) {
         this.urlService = urlService;
@@ -35,7 +39,8 @@ public class UrlController {
     }
 
     @GetMapping("/{shortCode}")
-    public String redirectToOriginalUrl(@PathVariable("shortCode") String shortUrl) {
+    public String redirectToOriginalUrl(@PathVariable("shortCode") String shortCode) {
+        String shortUrl = baseUrl + shortCode;
         urlValidator.validateUrl(shortUrl);
         String originalUrl = urlService.getOriginalUrl(shortUrl);
         return "redirect:" + originalUrl;

@@ -5,11 +5,16 @@ import com.urlshortener.entities.Url;
 import com.urlshortener.exceptions.ResourceNotFoundException;
 import com.urlshortener.repositories.UrlRepository;
 import com.urlshortener.services.interfaces.UrlService;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 @Service
 public class UrlServiceImpl implements UrlService {
+
     private final UrlRepository urlRepository;
+
+    @Value("${app.base-url}")
+    private String baseUrl;
 
     // Constructor con inyección de dependencias
     public UrlServiceImpl(UrlRepository urlRepository) {
@@ -21,7 +26,7 @@ public class UrlServiceImpl implements UrlService {
         String shortCode = generateUniqueShortCode();
         Url url = new Url();
         url.setLongUrl(longUrl);
-        url.setShortUrl("http://short.url/" + shortCode);
+        url.setShortUrl(baseUrl + shortCode);
         urlRepository.save(url);
         return convertToDto(url);
     }
@@ -45,10 +50,9 @@ public class UrlServiceImpl implements UrlService {
     }
 
     private String generateUniqueShortCode() {
-        String shortUrl = "http://short.url/";
         do {
             String shortCode = Long.toHexString(Double.doubleToLongBits(Math.random())).substring(0, 6);
-            shortUrl = shortUrl + shortCode;
+            String shortUrl = baseUrl + shortCode;
             if (urlRepository.findByShortUrl(shortUrl).isEmpty()) return shortCode;
         } while (true);
     }
