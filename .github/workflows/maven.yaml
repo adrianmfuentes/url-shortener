@@ -3,12 +3,17 @@ name: Java CI/CD con Maven
 on:
   push:
     branches: [ "main" ]
-  pull_request:
-    branches: [ "main" ]
 
 jobs:
   build:
     runs-on: ubuntu-latest
+
+    # Definimos el servicio de base de datos
+    services:
+      mongodb:
+        image: mongo:6.0
+        ports:
+          - 27017:27017
 
     steps:
       - uses: actions/checkout@v4
@@ -21,16 +26,8 @@ jobs:
           cache: maven
 
       - name: Compilar y Ejecutar Tests
-        run: mvn -B clean test -DargLine="-XX:+EnableDynamicAgentLoading -Xshare:off"
-
-      - name: Ejecutar Test de Rendimiento
-        run: mvn test -Dtest=UrlPerformanceTest
-
-      - name: Generar Artefacto JAR
-        run: mvn -B package -DskipTests --file pom.xml
-
-      - name: Subir Artefacto
-        uses: actions/upload-artifact@v4
-        with:
-          name: url-shortener-app
-          path: target/*.jar
+        run: |
+          mvn -B clean test \
+          -Dspring.mongodb.embedded.version=none \
+          -Dspring.data.mongodb.port=27017 \
+          -DargLine="-XX:+EnableDynamicAgentLoading -Xshare:off"
