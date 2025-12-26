@@ -1,0 +1,12 @@
+# Configuración de Dependabot para mantener las dependencias al día
+version: 2
+updates:
+  - [cite_start]package-ecosystem: "maven" # Para tu archivo pom.xml 
+    [cite_start]directory: "/" # Donde está tu pom.xml (en la raíz) 
+    schedule:
+      interval: "weekly" # Revisa actualizaciones cada semana
+    open-pull-requests-limit: 10 # Máximo de PRs abiertas a la vez
+    groups:
+      dependencies:
+        patterns:
+          - "*" # Agrupa todas las actualizaciones en un solo PR si prefieres menos ruido
