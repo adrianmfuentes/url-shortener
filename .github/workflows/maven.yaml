@@ -20,8 +20,8 @@ jobs:
           distribution: 'temurin'
           cache: maven
 
-      - name: Compilar y Ejecutar Tests (Unitarios e Integración)
-        run: mvn -B clean test --file pom.xml
+      - name: Compilar y Ejecutar Tests
+        run: mvn -B clean test -DargLine="-XX:+EnableDynamicAgentLoading -Xshare:off"
 
       - name: Ejecutar Test de Rendimiento
         run: mvn test -Dtest=UrlPerformanceTest
