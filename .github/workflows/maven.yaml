@@ -8,7 +8,7 @@ jobs:
   build:
     runs-on: ubuntu-latest
 
-    # Definimos el servicio de base de datos
+    # GitHub levanta un MongoDB real
     services:
       mongodb:
         image: mongo:6.0
@@ -28,6 +28,6 @@ jobs:
       - name: Compilar y Ejecutar Tests
         run: |
           mvn -B clean test \
-          -Dspring.mongodb.embedded.version=none \
-          -Dspring.data.mongodb.port=27017 \
+          -Dde.flapdoodle.mongodb.embedded.enabled=false \
+          -Dspring.data.mongodb.uri=mongodb://localhost:27017/url-shortener-test \
           -DargLine="-XX:+EnableDynamicAgentLoading -Xshare:off"
