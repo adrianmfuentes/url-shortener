@@ -1,60 +1,47 @@
 <!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>URL Shortener</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body class="bg-slate-900 text-white min-h-screen flex items-center justify-center p-6">
+<div class="max-w-md w-full bg-slate-800 p-8 rounded-2xl shadow-2xl border border-slate-700">
+    <h1 class="text-3xl font-bold mb-6 text-center text-blue-400">URL Shortener</h1>
 
-<html lang="es" xmlns:th="http://www.thymeleaf.org">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>URL Shortener</title>
-        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
-        <link th:href="@{/css/styles.css}" rel="stylesheet">
-    </head>
+    <form th:action="@{/api/url/shorten}" method="POST" class="space-y-4">
+        <input type="url" name="longUrl" required
+               class="w-full p-4 bg-slate-700 border border-slate-600 rounded-lg"
+               placeholder="Pega tu link largo aquí...">
+        <button type="submit" class="w-full bg-blue-600 p-4 rounded-lg font-bold">
+            Acortar URL
+        </button>
+    </form>
 
-    <body class="bg-light">
-        <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
-            <div class="container">
-                <a class="navbar-brand" href="#"><i class="bi bi-link-45deg"></i> URLShort</a>
-            </div>
-        </nav>
-
-        <div class="container my-5">
-            <div class="row justify-content-center">
-                <div class="col-md-8">
-                    <div class="card shadow-sm">
-                        <div class="card-body">
-                            <h1 class="text-center mb-4">Acorta tus URLs</h1>
-                            <form th:action="@{/shorten}" method="post" class="mb-4">
-                                <div class="input-group">
-                                    <input type="url" name="longUrl" class="form-control form-control-lg"
-                                           placeholder="Pega tu URL aquí" required>
-                                    <button class="btn btn-primary btn-lg" type="submit">
-                                        <i class="bi bi-scissors"></i> Acortar
-                                    </button>
-                                </div>
-                            </form>
-
-                            <div th:if="${shortUrl}" class="alert alert-success">
-                                <h5>¡URL acortada!</h5>
-                                <div class="input-group">
-                                    <input type="text" class="form-control" th:value="${shortUrl}" id="shortUrlInput" readonly>
-                                    <button class="btn btn-outline-primary" onclick="copyToClipboard()">
-                                        <i class="bi bi-clipboard"></i> Copiar
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+    <div th:if="${shortUrl}" class="mt-8 p-4 bg-slate-700 rounded-lg border border-blue-500/30">
+        <p class="text-sm text-slate-400 mb-2">Tu link acortado:</p>
+        <div class="flex items-center justify-between gap-2">
+            <span id="shortLink" class="text-blue-300 font-mono truncate" th:text="${shortUrl}"></span>
+            <button onclick="copyToClipboard()" class="text-slate-400 hover:text-white">
+                <i class="fa-regular fa-copy"></i>
+            </button>
         </div>
+    </div>
 
-        <footer class="footer mt-auto py-3 bg-dark text-white">
-            <div class="container text-center">
-                <span>© 2024 URLShort. Todos los derechos reservados.</span>
-            </div>
-        </footer>
+    <br>
 
-        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-        <script th:src="@{/js/scripts.js}"></script>
-    </body>
+    <div th:if="${error}" class="p-4 mb-4 bg-red-900/30 border border-red-500 text-red-400 rounded-lg">
+        <i class="fa-solid fa-circle-exclamation mr-2"></i>
+        <span th:text="${error}"></span>
+    </div>
+</div>
+
+<script>
+    function copyToClipboard() {
+        const text = document.getElementById('shortLink').innerText;
+        navigator.clipboard.writeText(text);
+        alert('¡Copiado!');
+    }
+</script>
+</body>
 </html>

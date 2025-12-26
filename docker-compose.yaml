@@ -1,0 +1,29 @@
+services:
+  mongodb_prod:
+    image: mongo:6
+    container_name: mongodb_prod
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: admin
+      MONGO_INITDB_ROOT_PASSWORD: password123
+      MONGO_INITDB_DATABASE: shortener_db
+    volumes:
+      - ./mongo-data:/data/db
+    networks:
+      - shortener_net
+
+  shortener_app:
+    build: .
+    container_name: shortener_app
+    ports:
+      - "8080:8080"
+    environment:
+      - SPRING_PROFILES_ACTIVE=prod
+      - SPRING_DATA_MONGODB_URI=mongodb://admin:password123@mongodb_prod:27017/shortener_db?authSource=admin
+    depends_on:
+      - mongodb_prod
+    networks:
+      - shortener_net
+
+networks:
+  shortener_net:
+    driver: bridge

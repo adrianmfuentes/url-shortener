@@ -2,7 +2,6 @@ package com.urlshortener.services;
 
 import com.urlshortener.dtos.UrlDto;
 import com.urlshortener.entities.Url;
-import com.urlshortener.exceptions.ResourceNotFoundException;
 import com.urlshortener.repositories.UrlRepository;
 import com.urlshortener.services.interfaces.UrlService;
 import org.springframework.beans.factory.annotation.Value;
@@ -16,30 +15,8 @@ public class UrlServiceImpl implements UrlService {
     @Value("${app.base-url}")
     private String baseUrl;
 
-    // Constructor con inyección de dependencias
     public UrlServiceImpl(UrlRepository urlRepository) {
         this.urlRepository = urlRepository;
-    }
-
-    @Override
-    public UrlDto shortenUrl(String longUrl) {
-        String shortCode = generateUniqueShortCode();
-        Url url = new Url();
-        url.setLongUrl(longUrl);
-        url.setShortUrl(baseUrl + shortCode);
-        urlRepository.save(url);
-        return convertToDto(url);
-    }
-
-    @Override
-    public String getOriginalUrl(String shortUrl) {
-        try {
-            Url url = urlRepository.findByShortUrl(shortUrl)
-                    .orElseThrow(() -> new ResourceNotFoundException("URL not found"));
-            return url.getLongUrl();
-        } catch (ResourceNotFoundException e) {
-            throw new RuntimeException(e);
-        }
     }
 
     private UrlDto convertToDto(Url url) {
@@ -49,11 +26,37 @@ public class UrlServiceImpl implements UrlService {
         return dto;
     }
 
+
+    @Override
+    public UrlDto shortenUrl(String longUrl) {
+        try {
+            String shortCode = generateUniqueShortCode();
+            Url url = new Url();
+            url.setShortCode(shortCode);
+            url.setLongUrl(longUrl);
+            url.setShortUrl(baseUrl + "/" + shortCode);
+
+            Url savedUrl = urlRepository.save(url);
+
+            return convertToDto(savedUrl);
+        } catch (Exception e) {
+            System.err.println("✗ Error guardando URL: " + e.getMessage());
+            throw e;
+        }
+    }
+
+    @Override
+    public String getOriginalUrl(String shortCode) {
+        return urlRepository.findByShortCode(shortCode)
+                .map(Url::getLongUrl)
+                .orElse(null);
+    }
+
     private String generateUniqueShortCode() {
+        String shortCode;
         do {
-            String shortCode = Long.toHexString(Double.doubleToLongBits(Math.random())).substring(0, 6);
-            String shortUrl = baseUrl + shortCode;
-            if (urlRepository.findByShortUrl(shortUrl).isEmpty()) return shortCode;
-        } while (true);
+            shortCode = Long.toHexString(Double.doubleToLongBits(Math.random())).substring(0, 6);
+        } while (urlRepository.findByShortCode(shortCode).isPresent());
+        return shortCode;
     }
 }
