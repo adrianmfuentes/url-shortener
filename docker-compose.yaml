@@ -7,13 +7,14 @@ services:
       MONGO_INITDB_ROOT_PASSWORD: password123
       MONGO_INITDB_DATABASE: shortener_db
     volumes:
-      - ./mongo-data:/data/db
+      - mongo-data-prod:/data/db # Usamos volumen de docker para persistencia real
     networks:
       - shortener_net
 
   shortener_app:
-    build: .
+    image: ghcr.io/adrianmfuentes/url-shortener:latest
     container_name: shortener_app
+    pull_policy: always
     environment:
       - SPRING_PROFILES_ACTIVE=prod
       - APP_BASE_URL=https://url-shortener.amfserver.duckdns.org
@@ -22,7 +23,14 @@ services:
       - mongodb_prod
     networks:
       - shortener_net
+      - npm_proxy_net
 
 networks:
   shortener_net:
     driver: bridge
+  npm_proxy_net:
+    external: true
+    name: nginx-proxy-manager_default
+
+volumes:
+  mongo-data-prod:
