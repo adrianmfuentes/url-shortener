@@ -2,7 +2,7 @@
 FROM maven:3.9-eclipse-temurin-21 AS build
 WORKDIR /app
 
-# Usamos ARG para detectar la arquitectura automáticamente (amd64 o arm64)
+# Usamos ARG para detectar la arquitectura
 ARG TARGETARCH
 
 # Descarga el binario correcto de Tailwind según la arquitectura
@@ -16,13 +16,6 @@ RUN if [ "$TARGETARCH" = "arm64" ]; then \
 
 COPY . .
 
-# ... (después del COPY . .)
-RUN ls -R ./src/main/resources/templates/  # Esto imprimirá en el log de Portainer si los HTML están ahí
-RUN tailwindcss -i ./src/main/resources/static/css/input.css -o ./src/main/resources/static/css/output.css --minify
-
-# Generar el CSS de producción
-RUN tailwindcss -i ./src/main/resources/static/css/input.css \
-               -o ./src/main/resources/static/css/output.css --minify
 # Construir el JAR
 RUN mvn clean package -DskipTests
 
