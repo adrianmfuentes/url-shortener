@@ -16,9 +16,9 @@ RUN if [ "$TARGETARCH" = "arm64" ]; then \
 
 COPY . .
 
-# Generar el CSS de producción (asegúrate de que input.css existe)
-RUN tailwindcss -i ./src/main/resources/static/css/input.css -o ./src/main/resources/static/css/output.css --minify
-
+# Generar el CSS de producción
+RUN tailwindcss -i ./src/main/resources/static/css/input.css \
+               -o ./src/main/resources/static/css/output.css --minify
 # Construir el JAR
 RUN mvn clean package -DskipTests
 
