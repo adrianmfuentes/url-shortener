@@ -47,6 +47,8 @@ services:
       - "27018:27017"
     environment:
       - MONGO_INITDB_DATABASE=url-shortener-test
+    profiles:
+      - test
 
   shortener_app:
     image: ghcr.io/adrianmfuentes/url-shortener:latest
