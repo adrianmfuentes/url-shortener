@@ -4,6 +4,7 @@ import com.urlshortener.services.interfaces.RateLimitService;
 import com.urlshortener.services.interfaces.UrlService;
 import com.urlshortener.validators.UrlValidator;
 import jakarta.servlet.http.HttpServletRequest;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -21,6 +22,9 @@ public class UrlController {
     private final UrlService urlService;
     private final UrlValidator urlValidator;
     private final RateLimitService rateLimitService;
+
+    @Value("${app.base-url:http://localhost:8080}")
+    private String baseUrl;
 
     public UrlController(UrlService urlService, UrlValidator urlValidator,  RateLimitService rateLimitService) {
         this.urlService = urlService;
