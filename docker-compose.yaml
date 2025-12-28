@@ -12,6 +12,12 @@ services:
       - shortener_net
     profiles:
       - prod
+    healthcheck:
+      test: echo 'db.runCommand("ping").ok' | mongosh localhost:27017/test --quiet
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 40s
 
   mongodb_dev:
     image: mongo:6
@@ -44,7 +50,9 @@ services:
       - APP_BASE_URL=https://url-shortener.amfserver.duckdns.org
       - SPRING_DATA_MONGODB_URI=mongodb://${DB_USER}:${DB_PASSWORD}@mongodb_prod:27017/${DB_NAME}?authSource=admin
     depends_on:
-      - mongodb_prod
+      mongodb_prod:
+        condition: service_healthy
+    restart: on-failure
     networks:
       - shortener_net
       - npm_proxy_net
