@@ -47,8 +47,8 @@ Permite a los usuarios transformar enlaces extensos en códigos únicos y rastre
 ## Ejecución
 
 ### Clonar el repositorio
-    git clone [https://github.com/tu-usuario/url-shortener.git](https://github.com/tu-usuario/url-shortener.git)
-
+    git clone https://github.com/tu-usuario/url-shortener.git
+    
 ### Compilar e instalar dependencias
     mvn clean install
 
