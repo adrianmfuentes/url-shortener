@@ -44,7 +44,7 @@ services:
   mongodb-test:
     image: mongo:6.0
     ports:
-      - "27017:27017"
+      - "27018:27017"
     environment:
       - MONGO_INITDB_DATABASE=url-shortener-test
 
