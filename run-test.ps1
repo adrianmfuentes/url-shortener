@@ -1,29 +1,37 @@
-#!/bin/bash
-
-set -e
-
-cleanup() {
-    echo "🛑 Deteniendo MongoDB..."
+# Definir la función de limpieza
+function cleanup {
+    Write-Host "🛑 Deteniendo MongoDB..."
     docker-compose -f docker-compose.test.yml down -v
 }
 
-trap cleanup EXIT
+# Manejo de errores globales
+$ErrorActionPreference = "Stop"  # Para detener el script en caso de error
 
-echo "🚀 Iniciando MongoDB..."
+# Asegurarse de limpiar al salir
+$cleanupTask = Register-EngineEvent -SourceIdentifier PowerShell.Exiting -Action { cleanup }
+
+Write-Host "🚀 Iniciando MongoDB..."
 docker-compose -f docker-compose.test.yml up -d
 
-echo "⏳ Esperando a que MongoDB esté listo..."
-timeout=30
-until docker exec $(docker-compose -f docker-compose.test.yml ps -q mongodb-test) mongosh --eval "db.adminCommand('ping')" > /dev/null 2>&1; do
-    timeout=$((timeout - 1))
-    if [ $timeout -le 0 ]; then
-        echo "❌ MongoDB no respondió a tiempo"
-        exit 1
-    fi
-    sleep 1
-done
+Write-Host "⏳ Esperando a que MongoDB esté listo..."
+$timeout = 30
+do {
+    $containerId = docker-compose -f docker-compose.test.yml ps -q mongodb-test
+    $pingResult = docker exec $containerId mongosh --eval "db.adminCommand('ping')" 2>$null
+    if ($pingResult -eq $null) {
+        $timeout--
+        if ($timeout -le 0) {
+            Write-Host "❌ MongoDB no respondió a tiempo"
+            exit 1
+        }
+        Start-Sleep -Seconds 1
+    }
+} while ($pingResult -ne $null)
 
-echo "🧪 Ejecutando tests..."
+Write-Host "🧪 Ejecutando tests..."
 mvn clean test
 
-echo "✅ Tests completados"
+Write-Host "✅ Tests completados"
+
+# Limpiar eventos registrados
+Unregister-Event -SourceIdentifier PowerShell.Exiting
