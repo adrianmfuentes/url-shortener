@@ -1,11 +1,9 @@
 package com.urlshortener.controllers;
 
-import com.urlshortener.entities.RateLimit;
 import com.urlshortener.services.interfaces.RateLimitService;
 import com.urlshortener.services.interfaces.UrlService;
 import com.urlshortener.validators.UrlValidator;
 import jakarta.servlet.http.HttpServletRequest;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -16,7 +14,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.net.URI;
-import java.time.LocalDateTime;
 
 @Controller
 public class UrlController {
@@ -24,9 +21,6 @@ public class UrlController {
     private final UrlService urlService;
     private final UrlValidator urlValidator;
     private final RateLimitService rateLimitService;
-
-    @Value("${app.base-url}")
-    private String baseUrl;
 
     public UrlController(UrlService urlService, UrlValidator urlValidator,  RateLimitService rateLimitService) {
         this.urlService = urlService;
@@ -67,11 +61,6 @@ public class UrlController {
                     .build();
         }
 
-        return ResponseEntity.notFound().build();
-    }
-
-    @GetMapping("/favicon.ico")
-    public ResponseEntity<Void> favicon() {
         return ResponseEntity.notFound().build();
     }
 
