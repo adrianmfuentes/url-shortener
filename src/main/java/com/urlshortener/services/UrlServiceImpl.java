@@ -7,6 +7,8 @@ import com.urlshortener.services.interfaces.UrlService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
+
 @Service
 public class UrlServiceImpl implements UrlService {
 
@@ -30,6 +32,13 @@ public class UrlServiceImpl implements UrlService {
     @Override
     public UrlDto shortenUrl(String longUrl) {
         try {
+            // Verificar si la URL ya fue acortada anteriormente
+            Optional<Url> existingUrl = urlRepository.findByLongUrl(longUrl);
+            if (existingUrl.isPresent()) {
+                return convertToDto(existingUrl.get());
+            }
+
+            // Si no existe, crear una nueva
             String shortCode = generateUniqueShortCode();
             Url url = new Url();
             url.setShortCode(shortCode);
@@ -37,7 +46,6 @@ public class UrlServiceImpl implements UrlService {
             url.setShortUrl(baseUrl + "/" + shortCode);
 
             Url savedUrl = urlRepository.save(url);
-
             return convertToDto(savedUrl);
         } catch (Exception e) {
             System.err.println("✗ Error guardando URL: " + e.getMessage());

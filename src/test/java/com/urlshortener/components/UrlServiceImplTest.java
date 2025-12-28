@@ -50,6 +50,7 @@ class UrlServiceImplTest {
         savedUrl.setLongUrl(TEST_LONG_URL);
         savedUrl.setShortUrl(BASE_URL + "/" + shortCode);
 
+        when(urlRepository.findByLongUrl(TEST_LONG_URL)).thenReturn(Optional.empty());
         when(urlRepository.findByShortCode(anyString())).thenReturn(Optional.empty());
         when(urlRepository.save(any(Url.class))).thenReturn(savedUrl);
 
@@ -61,6 +62,7 @@ class UrlServiceImplTest {
         assertThat(result.getLongUrl()).isEqualTo(TEST_LONG_URL);
         assertThat(result.getShortUrl()).startsWith(BASE_URL);
 
+        verify(urlRepository, times(1)).findByLongUrl(TEST_LONG_URL);
         verify(urlRepository, atLeastOnce()).findByShortCode(anyString());
         verify(urlRepository, times(1)).save(any(Url.class));
     }
@@ -74,6 +76,7 @@ class UrlServiceImplTest {
         savedUrl.setLongUrl(TEST_LONG_URL);
         savedUrl.setShortUrl(BASE_URL + "/unique1");
 
+        when(urlRepository.findByLongUrl(TEST_LONG_URL)).thenReturn(Optional.empty());
         when(urlRepository.findByShortCode(anyString()))
                 .thenReturn(Optional.of(new Url())) // Primera vez colisión
                 .thenReturn(Optional.empty()); // Segunda vez único
@@ -125,6 +128,7 @@ class UrlServiceImplTest {
     @DisplayName("Debe manejar errores al guardar URL")
     void shouldHandleErrorWhenSavingUrl() {
         // Arrange
+        when(urlRepository.findByLongUrl(TEST_LONG_URL)).thenReturn(Optional.empty());
         when(urlRepository.findByShortCode(anyString())).thenReturn(Optional.empty());
         when(urlRepository.save(any(Url.class))).thenThrow(new RuntimeException("Database error"));
 
@@ -143,6 +147,7 @@ class UrlServiceImplTest {
         savedUrl.setLongUrl(TEST_LONG_URL);
         savedUrl.setShortUrl(BASE_URL + "/test123");
 
+        when(urlRepository.findByLongUrl(TEST_LONG_URL)).thenReturn(Optional.empty());
         when(urlRepository.findByShortCode(anyString())).thenReturn(Optional.empty());
         when(urlRepository.save(any(Url.class))).thenReturn(savedUrl);
 
@@ -163,6 +168,7 @@ class UrlServiceImplTest {
         savedUrl.setLongUrl(TEST_LONG_URL);
         savedUrl.setShortUrl(BASE_URL + "/abc123");
 
+        when(urlRepository.findByLongUrl(TEST_LONG_URL)).thenReturn(Optional.empty());
         when(urlRepository.findByShortCode(anyString())).thenReturn(Optional.empty());
         when(urlRepository.save(any(Url.class))).thenAnswer(invocation -> {
             Url arg = invocation.getArgument(0);
@@ -187,6 +193,7 @@ class UrlServiceImplTest {
         savedUrl.setLongUrl(TEST_LONG_URL);
         savedUrl.setShortUrl(BASE_URL + "/" + shortCode);
 
+        when(urlRepository.findByLongUrl(TEST_LONG_URL)).thenReturn(Optional.empty());
         when(urlRepository.findByShortCode(anyString())).thenReturn(Optional.empty());
         when(urlRepository.save(any(Url.class))).thenReturn(savedUrl);
 
@@ -195,6 +202,64 @@ class UrlServiceImplTest {
 
         // Assert
         assertThat(result.getShortUrl()).isEqualTo(BASE_URL + "/" + shortCode);
+    }
+
+    @Test
+    @DisplayName("Debe reutilizar URL ya acortada en lugar de crear una nueva")
+    void shouldReuseExistingShortUrlInsteadOfCreatingNew() {
+        // Arrange
+        String existingShortCode = "abc123";
+        Url existingUrl = new Url();
+        existingUrl.setId("1");
+        existingUrl.setShortCode(existingShortCode);
+        existingUrl.setLongUrl(TEST_LONG_URL);
+        existingUrl.setShortUrl(BASE_URL + "/" + existingShortCode);
+
+        when(urlRepository.findByLongUrl(TEST_LONG_URL)).thenReturn(Optional.of(existingUrl));
+
+        // Act
+        UrlDto result = urlService.shortenUrl(TEST_LONG_URL);
+
+        // Assert
+        assertThat(result).isNotNull();
+        assertThat(result.getLongUrl()).isEqualTo(TEST_LONG_URL);
+        assertThat(result.getShortUrl()).isEqualTo(BASE_URL + "/" + existingShortCode);
+
+        // Verificar que se consultó por URL larga
+        verify(urlRepository, times(1)).findByLongUrl(TEST_LONG_URL);
+        // Verificar que NO se generó un nuevo código ni se guardó
+        verify(urlRepository, never()).findByShortCode(anyString());
+        verify(urlRepository, never()).save(any(Url.class));
+    }
+
+    @Test
+    @DisplayName("Debe crear nueva URL cuando no existe una previa")
+    void shouldCreateNewUrlWhenNotPreviouslyShortened() {
+        // Arrange
+        String newShortCode = "new123";
+        Url newUrl = new Url();
+        newUrl.setId("2");
+        newUrl.setShortCode(newShortCode);
+        newUrl.setLongUrl(TEST_LONG_URL);
+        newUrl.setShortUrl(BASE_URL + "/" + newShortCode);
+
+        when(urlRepository.findByLongUrl(TEST_LONG_URL)).thenReturn(Optional.empty());
+        when(urlRepository.findByShortCode(anyString())).thenReturn(Optional.empty());
+        when(urlRepository.save(any(Url.class))).thenReturn(newUrl);
+
+        // Act
+        UrlDto result = urlService.shortenUrl(TEST_LONG_URL);
+
+        // Assert
+        assertThat(result).isNotNull();
+        assertThat(result.getLongUrl()).isEqualTo(TEST_LONG_URL);
+        assertThat(result.getShortUrl()).startsWith(BASE_URL);
+
+        // Verificar que se consultó por URL larga
+        verify(urlRepository, times(1)).findByLongUrl(TEST_LONG_URL);
+        // Verificar que se generó un nuevo código y se guardó
+        verify(urlRepository, atLeastOnce()).findByShortCode(anyString());
+        verify(urlRepository, times(1)).save(any(Url.class));
     }
 }
 
