@@ -38,16 +38,19 @@ jobs:
 
       - name: Compilar y Ejecutar Tests
         env:
-          SPRING_DATA_MONGODB_USERNAME: ${{ secrets.MONGO_TEST_USERNAME }}
-          SPRING_DATA_MONGODB_PASSWORD: ${{ secrets.MONGO_TEST_PASSWORD }}
-          SPRING_DATA_MONGODB_HOST: localhost
-          SPRING_DATA_MONGODB_PORT: 27017
-          SPRING_DATA_MONGODB_AUTHENTICATION_DATABASE: admin
+          MONGO_USERNAME: ${{ secrets.MONGO_TEST_USERNAME }}
+          MONGO_PASSWORD: ${{ secrets.MONGO_TEST_PASSWORD }}
         run: |
           mvn -B clean package \
             -Dspring.profiles.active=test \
             -Dde.flapdoodle.mongodb.embedded.enabled=false \
-            -DargLine="-XX:+EnableDynamicAgentLoading -Xshare:off" 
+            -Dspring.data.mongodb.host=localhost \
+            -Dspring.data.mongodb.port=27017 \
+            -Dspring.data.mongodb.username="${MONGO_USERNAME}" \
+            -Dspring.data.mongodb.password="${MONGO_PASSWORD}" \
+            -Dspring.data.mongodb.authentication-database=admin \
+            -DargLine="-XX:+EnableDynamicAgentLoading -Xshare:off"
+      
 
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
