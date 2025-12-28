@@ -55,7 +55,12 @@ services:
     environment:
       - SPRING_PROFILES_ACTIVE=prod
       - APP_BASE_URL=https://url-shortener.amfserver.duckdns.org
-      - SPRING_DATA_MONGODB_URI=mongodb://${DB_USER}:${DB_PASSWORD}@mongodb_prod:27017/${DB_NAME}?authSource=admin
+      - SPRING_DATA_MONGODB_HOST=mongodb_prod
+      - SPRING_DATA_MONGODB_PORT=27017
+      - SPRING_DATA_MONGODB_DATABASE=${DB_NAME}
+      - SPRING_DATA_MONGODB_USERNAME=${DB_USER}
+      - SPRING_DATA_MONGODB_PASSWORD=${DB_PASSWORD}
+      - SPRING_DATA_MONGODB_AUTHENTICATION_DATABASE=admin
     depends_on:
       mongodb_prod:
         condition: service_healthy
