@@ -28,6 +28,12 @@ services:
       - shortener_net
     profiles:
       - dev
+    healthcheck:
+      test: echo 'db.runCommand("ping").ok' | mongosh localhost:27017/test --quiet
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 40s
 
   shortener_app:
     image: ghcr.io/adrianmfuentes/url-shortener:latest
@@ -55,7 +61,9 @@ services:
     ports:
       - "8080:8080"
     depends_on:
-      - mongodb_dev
+      mongodb_dev:
+        condition: service_healthy
+    restart: on-failure
     networks:
       - shortener_net
     profiles:

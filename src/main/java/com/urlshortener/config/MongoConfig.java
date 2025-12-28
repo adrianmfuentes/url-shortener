@@ -6,7 +6,9 @@ import com.mongodb.client.model.Indexes;
 import jakarta.annotation.PostConstruct;
 import org.bson.Document;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.event.EventListener;
 import org.springframework.data.mongodb.core.MongoTemplate;
 
 @Configuration
@@ -15,7 +17,7 @@ public class MongoConfig {
     @Autowired
     private MongoTemplate mongoTemplate;
 
-    @PostConstruct
+    @EventListener(ApplicationReadyEvent.class)
     public void initIndexes() {
         MongoCollection<Document> collection = mongoTemplate.getCollection("urls");
 
