@@ -7,9 +7,27 @@ services:
       MONGO_INITDB_ROOT_PASSWORD: password123
       MONGO_INITDB_DATABASE: shortener_db
     volumes:
-      - mongo-data-prod:/data/db # Usamos volumen de docker para persistencia real
+      - mongo-data-prod:/data/db
     networks:
       - shortener_net
+    profiles:
+      - prod
+
+  mongodb_dev:
+    image: mongo:6
+    container_name: mongodb_dev
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: admin
+      MONGO_INITDB_ROOT_PASSWORD: password123
+      MONGO_INITDB_DATABASE: shortener_db
+    ports:
+      - "27017:27017"
+    volumes:
+      - ./mongo-data:/data/db
+    networks:
+      - shortener_net
+    profiles:
+      - dev
 
   shortener_app:
     image: ghcr.io/adrianmfuentes/url-shortener:latest
@@ -24,6 +42,24 @@ services:
     networks:
       - shortener_net
       - npm_proxy_net
+    profiles:
+      - prod
+
+  shortener_app_dev:
+    build: .
+    container_name: shortener_app_dev
+    environment:
+      - SPRING_PROFILES_ACTIVE=dev
+      - APP_BASE_URL=http://localhost:8080
+      - SPRING_DATA_MONGODB_URI=mongodb://admin:password123@mongodb_dev:27017/shortener_db?authSource=admin
+    ports:
+      - "8080:8080"
+    depends_on:
+      - mongodb_dev
+    networks:
+      - shortener_net
+    profiles:
+      - dev
 
 networks:
   shortener_net:

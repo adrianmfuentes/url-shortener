@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Términos Legales | URL Shortener</title>
+        <script src="https://cdn.tailwindcss.com"></script>
+        <style>
+            @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap');
+            body { font-family: 'Inter', sans-serif; }
+            .glass { background: rgba(30, 41, 59, 0.7); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.1); }
+        </style>
+    </head>
+
+    <body class="bg-gradient-to-br from-slate-950 via-slate-900 to-blue-950 text-slate-300 min-h-screen p-6">
+        <main class="max-w-3xl mx-auto my-12 glass p-10 rounded-3xl shadow-2xl">
+            <a th:href="@{/}" class="text-blue-400 hover:text-blue-300 text-sm mb-6 inline-block">← Volver al inicio</a>
+
+            <h1 class="text-3xl font-bold text-white mb-6">Términos y Condiciones</h1>
+
+            <section class="space-y-6 text-sm leading-relaxed">
+                <div>
+                    <h2 class="text-xl font-semibold text-blue-400 mb-2">1. Uso Aceptable</h2>
+                    <p>El usuario se compromete a no utilizar este servicio para acortar enlaces que apunten a contenido ilegal, malware, phishing o cualquier material que infrinja los derechos de autor.</p>
+                </div>
+
+                <div>
+                    <h2 class="text-xl font-semibold text-blue-400 mb-2">2. Limitación de Responsabilidad</h2>
+                    <p>No nos hacemos responsables del contenido de los sitios web externos enlazados a través de nuestro acortador. El uso de los links es bajo la exclusiva responsabilidad del usuario final.</p>
+                </div>
+
+                <div>
+                    <h2 class="text-xl font-semibold text-blue-400 mb-2">3. Disponibilidad del Servicio</h2>
+                    <p>Nos reservamos el derecho de eliminar cualquier URL acortada sin previo aviso si se considera que viola nuestras políticas o por mantenimiento del sistema.</p>
+                </div>
+            </section>
+
+            <footer class="mt-12 pt-6 border-t border-white/10 text-center text-slate-500">
+                &copy; 2024 URL Shortener Open Source Project
+            </footer>
+        </main>
+    </body>
+</html>

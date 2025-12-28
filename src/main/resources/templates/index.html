@@ -1,47 +1,115 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
-<head>
-    <title>URL Shortener</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-</head>
-<body class="bg-slate-900 text-white min-h-screen flex items-center justify-center p-6">
-<div class="max-w-md w-full bg-slate-800 p-8 rounded-2xl shadow-2xl border border-slate-700">
-    <h1 class="text-3xl font-bold mb-6 text-center text-blue-400">URL Shortener</h1>
 
-    <form th:action="@{/api/url/shorten}" method="POST" class="space-y-4">
-        <input type="url" name="longUrl" required
-               class="w-full p-4 bg-slate-700 border border-slate-600 rounded-lg"
-               placeholder="Pega tu link largo aquí...">
-        <button type="submit" class="w-full bg-blue-600 p-4 rounded-lg font-bold">
-            Acortar URL
-        </button>
-    </form>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>URL Shortener | Acorta tus enlaces</title>
+        <script src="https://cdn.tailwindcss.com"></script>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 
-    <div th:if="${shortUrl}" class="mt-8 p-4 bg-slate-700 rounded-lg border border-blue-500/30">
-        <p class="text-sm text-slate-400 mb-2">Tu link acortado:</p>
-        <div class="flex items-center justify-between gap-2">
-            <span id="shortLink" class="text-blue-300 font-mono truncate" th:text="${shortUrl}"></span>
-            <button onclick="copyToClipboard()" class="text-slate-400 hover:text-white">
-                <i class="fa-regular fa-copy"></i>
-            </button>
-        </div>
-    </div>
+        <style>
+            @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap');
+            body { font-family: 'Inter', sans-serif; }
+            .glass {
+                background: rgba(30, 41, 59, 0.7);
+                backdrop-filter: blur(12px);
+                border: 1px solid rgba(255, 255, 255, 0.1);
+            }
+            .tooltip:hover .tooltip-text {
+                visibility: visible;
+                opacity: 1;
+            }
+        </style>
+    </head>
 
-    <br>
+    <body class="bg-gradient-to-br from-slate-950 via-slate-900 to-blue-950 text-slate-200 min-h-screen flex flex-col">
+        <main class="flex-grow flex items-center justify-center p-6">
+            <div class="max-w-lg w-full glass p-8 rounded-3xl shadow-2xl relative">
 
-    <div th:if="${error}" class="p-4 mb-4 bg-red-900/30 border border-red-500 text-red-400 rounded-lg">
-        <i class="fa-solid fa-circle-exclamation mr-2"></i>
-        <span th:text="${error}"></span>
-    </div>
-</div>
+                <div class="absolute top-6 right-8 group">
+                    <div class="relative flex items-center justify-center">
+                        <i class="fa-solid fa-circle-info text-slate-400 hover:text-blue-400 cursor-help transition-colors text-xl"></i>
+                        <div class="absolute right-0 top-8 w-64 p-3 bg-slate-800 text-xs text-slate-300 rounded-xl shadow-xl border border-slate-700 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 z-10">
+                            <p class="font-bold text-blue-400 mb-1"><i class="fa-solid fa-shield-halved mr-1"></i> Rate Limiting</p>
+                            Para garantizar la estabilidad, permitimos un máximo de 5 peticiones diarias por dirección IP.
+                        </div>
+                    </div>
+                </div>
 
-<script>
-    function copyToClipboard() {
-        const text = document.getElementById('shortLink').innerText;
-        navigator.clipboard.writeText(text);
-        alert('¡Copiado!');
-    }
-</script>
-</body>
+                <header class="text-center mb-10">
+                    <div class="inline-flex items-center justify-center w-16 h-16 bg-blue-600/20 rounded-2xl mb-4 border border-blue-500/30">
+                        <i class="fa-solid fa-link text-3xl text-blue-400"></i>
+                    </div>
+                    <h1 class="text-4xl font-extrabold bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-indigo-300">
+                        URL Shortener
+                    </h1>
+                    <p class="text-slate-400 mt-2 text-sm font-light">Transforma tus enlaces largos en algo simple.</p>
+                </header>
+
+                <form th:action="@{/api/url/shorten}" method="POST" class="space-y-5">
+                    <div class="relative group">
+                        <label>
+                            <input type="url" name="longUrl" required
+                                   class="w-full p-4 bg-slate-900/50 border border-slate-700 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all placeholder:text-slate-600"
+                                   placeholder="Pega tu link largo aquí...">
+                        </label>
+                    </div>
+                    <button type="submit"
+                            class="w-full bg-blue-600 hover:bg-blue-500 text-white p-4 rounded-xl font-bold transition-all transform hover:scale-[1.02] active:scale-95 shadow-lg shadow-blue-900/20">
+                        Acortar URL
+                    </button>
+                </form>
+
+                <div th:if="${shortUrl}" class="mt-10 p-5 bg-blue-500/10 rounded-2xl border border-blue-500/20 animate-fade-in">
+                    <p class="text-xs uppercase tracking-wider text-blue-400 font-bold mb-3">Tu link acortado está listo:</p>
+                    <div class="flex items-center justify-between gap-3 bg-slate-950/50 p-3 rounded-lg border border-slate-700">
+                        <span id="shortLink" class="text-blue-200 font-mono truncate text-sm" th:text="${shortUrl}">https://bit.ly/3xyz</span>
+                        <button onclick="copyToClipboard()"
+                                class="p-2 text-slate-400 hover:text-white hover:bg-slate-800 rounded-md transition-all"
+                                aria-label="Copiar al portapapeles">
+                            <i class="fa-regular fa-copy"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <div th:if="${error}" class="mt-6 p-4 bg-red-500/10 border border-red-500/30 text-red-400 rounded-xl flex items-center gap-3 text-sm">
+                    <i class="fa-solid fa-triangle-exclamation"></i>
+                    <span th:text="${error}">Ha ocurrido un error inesperado.</span>
+                </div>
+            </div>
+        </main>
+
+        <footer class="w-full p-8 border-t border-white/5 bg-slate-950/50">
+            <div class="max-w-4xl mx-auto flex flex-col md:flex-row justify-between items-center gap-6">
+                <div class="text-slate-500 text-sm">
+                    2025 URL Shortener.
+                </div>
+                <nav class="flex gap-6 text-sm">
+                    <a th:href="@{/privacidad}" class="text-slate-400 hover:text-blue-400 transition-colors">Privacidad</a>
+                    <a th:href="@{/terminos}" class="text-slate-400 hover:text-blue-400 transition-colors">Términos Legales</a>
+                </nav>
+                <div class="flex gap-4">
+                    <a href="https://github.com/adrianmfuentes/url-shortener.git" target="_blank" rel="noopener noreferrer" class="text-slate-500 hover:text-white transition-colors" aria-label="Github">
+                        <i class="fa-brands fa-github text-lg"></i>
+                    </a>
+                </div>
+            </div>
+        </footer>
+
+        <script>
+            function copyToClipboard() {
+                const text = document.getElementById('shortLink').innerText;
+                navigator.clipboard.writeText(text).then(() => {
+                    // Mejora visual al copiar
+                    const btn = document.querySelector('[onclick="copyToClipboard()"]');
+                    const originalIcon = btn.innerHTML;
+                    btn.innerHTML = '<i class="fa-solid fa-check text-green-400"></i>';
+                    setTimeout(() => {
+                        btn.innerHTML = originalIcon;
+                    }, 2000);
+                });
+            }
+        </script>
+    </body>
 </html>

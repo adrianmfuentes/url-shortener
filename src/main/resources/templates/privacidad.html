@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Política de Privacidad | URL Shortener</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+      @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap');
+      body { font-family: 'Inter', sans-serif; }
+      .glass { background: rgba(30, 41, 59, 0.7); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.1); }
+    </style>
+  </head>
+
+  <body class="bg-gradient-to-br from-slate-950 via-slate-900 to-blue-950 text-slate-300 min-h-screen p-6">
+    <main class="max-w-3xl mx-auto my-12 glass p-10 rounded-3xl shadow-2xl">
+      <a th:href="@{/}" class="text-blue-400 hover:text-blue-300 text-sm mb-6 inline-block">← Volver al inicio</a>
+
+      <h1 class="text-3xl font-bold text-white mb-6">Política de Privacidad</h1>
+
+      <section class="space-y-6 text-sm leading-relaxed">
+        <div>
+          <h2 class="text-xl font-semibold text-blue-400 mb-2">1. Recopilación de Datos</h2>
+          <p>Nuestra aplicación procesa las URLs que introduces para generar versiones cortas. No almacenamos datos personales identificables del usuario, salvo la dirección IP con fines de control de abuso.</p>
+        </div>
+
+        <div>
+          <h2 class="text-xl font-semibold text-blue-400 mb-2">2. Uso de la Información</h2>
+          <p>La información recopilada se utiliza exclusivamente para:</p>
+          <ul class="list-disc ml-5 mt-2 space-y-1">
+            <li>Garantizar el funcionamiento del servicio.</li>
+            <li>Prevenir ataques de denegación de servicio (DoS).</li>
+            <li>Generar estadísticas anónimas de uso.</li>
+          </ul>
+        </div>
+
+        <div>
+          <h2 class="text-xl font-semibold text-blue-400 mb-2">3. Cookies</h2>
+          <p>Este sitio no utiliza cookies de seguimiento ni de publicidad de terceros.</p>
+        </div>
+      </section>
+
+      <footer class="mt-12 pt-6 border-t border-white/10 text-center text-slate-500">
+        Última actualización: Diciembre 2024
+      </footer>
+    </main>
+  </body>
+</html>

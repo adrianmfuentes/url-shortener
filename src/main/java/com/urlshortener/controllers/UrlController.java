@@ -74,4 +74,15 @@ public class UrlController {
     public ResponseEntity<Void> favicon() {
         return ResponseEntity.notFound().build();
     }
+
+    @GetMapping("/privacidad")
+    public String privacidad() {
+        return "privacidad";
+    }
+
+    @GetMapping("/terminos")
+    public String terminos() {
+        return "terminos";
+    }
+
 }
