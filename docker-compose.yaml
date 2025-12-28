@@ -3,9 +3,9 @@ services:
     image: mongo:6
     container_name: mongodb_prod
     environment:
-      MONGO_INITDB_ROOT_USERNAME: admin
-      MONGO_INITDB_ROOT_PASSWORD: password123
-      MONGO_INITDB_DATABASE: shortener_db
+      MONGO_INITDB_ROOT_USERNAME: ${DB_USER}
+      MONGO_INITDB_ROOT_PASSWORD: ${DB_PASSWORD}
+      MONGO_INITDB_DATABASE: ${DB_NAME}
     volumes:
       - mongo-data-prod:/data/db
     networks:
@@ -17,9 +17,9 @@ services:
     image: mongo:6
     container_name: mongodb_dev
     environment:
-      MONGO_INITDB_ROOT_USERNAME: admin
-      MONGO_INITDB_ROOT_PASSWORD: password123
-      MONGO_INITDB_DATABASE: shortener_db
+      MONGO_INITDB_ROOT_USERNAME: ${DB_USER}
+      MONGO_INITDB_ROOT_PASSWORD: ${DB_PASSWORD}
+      MONGO_INITDB_DATABASE: ${DB_NAME}
     ports:
       - "27017:27017"
     volumes:
@@ -36,7 +36,7 @@ services:
     environment:
       - SPRING_PROFILES_ACTIVE=prod
       - APP_BASE_URL=https://url-shortener.amfserver.duckdns.org
-      - SPRING_DATA_MONGODB_URI=mongodb://admin:password123@mongodb_prod:27017/shortener_db?authSource=admin
+      - SPRING_DATA_MONGODB_URI=mongodb://${DB_USER}:${DB_PASSWORD}@mongodb_prod:27017/${DB_NAME}?authSource=admin
     depends_on:
       - mongodb_prod
     networks:
@@ -51,7 +51,7 @@ services:
     environment:
       - SPRING_PROFILES_ACTIVE=dev
       - APP_BASE_URL=http://localhost:8080
-      - SPRING_DATA_MONGODB_URI=mongodb://admin:password123@mongodb_dev:27017/shortener_db?authSource=admin
+      - SPRING_DATA_MONGODB_URI=mongodb://${DB_USER}:${DB_PASSWORD}@mongodb_dev:27017/${DB_NAME}?authSource=admin
     ports:
       - "8080:8080"
     depends_on:

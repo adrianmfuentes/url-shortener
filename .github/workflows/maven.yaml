@@ -4,7 +4,6 @@ on:
   push:
     branches: [ "main" ]
 
-# Permisos necesarios para subir la imagen a GitHub Packages
 permissions:
   contents: read
   packages: write
@@ -18,6 +17,9 @@ jobs:
         image: mongo:6.0
         ports:
           - 27017:27017
+        env:
+          MONGO_INITDB_ROOT_USERNAME: ${{ secrets.MONGO_TEST_USERNAME }}
+          MONGO_INITDB_ROOT_PASSWORD: ${{ secrets.MONGO_TEST_PASSWORD }}
         options: >-
           --health-cmd "mongosh --eval 'db.adminCommand(\"ping\")'"
           --health-interval 10s
@@ -39,7 +41,7 @@ jobs:
           mvn -B clean package \
           -Dspring.profiles.active=test \
           -Dde.flapdoodle.mongodb.embedded.enabled=false \
-          -Dspring.data.mongodb.uri=mongodb://localhost:27017/url-shortener-test \
+          -Dspring.data.mongodb.uri=mongodb://admin:password123@localhost:27017/url-shortener-test?authSource=admin \
           -DargLine="-XX:+EnableDynamicAgentLoading -Xshare:off"
 
       - name: Set up QEMU (Para soporte multi-arquitectura)
