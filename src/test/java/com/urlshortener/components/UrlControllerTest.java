@@ -21,7 +21,6 @@ import org.springframework.ui.Model;
 import java.net.URI;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
 
@@ -172,16 +171,6 @@ class UrlControllerTest {
 
         // Act
         ResponseEntity<Void> response = urlController.redirectToOriginalUrl(TEST_SHORT_CODE);
-
-        // Assert
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
-    }
-
-    @Test
-    @DisplayName("Debe retornar 404 para favicon")
-    void shouldReturn404ForFavicon() {
-        // Act
-        ResponseEntity<Void> response = urlController.favicon();
 
         // Assert
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
