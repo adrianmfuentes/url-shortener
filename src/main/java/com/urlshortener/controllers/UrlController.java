@@ -55,14 +55,8 @@ public class UrlController {
         return "index";
     }
 
-    @GetMapping(value = "/{shortCode}",
-                 produces = "text/html")
+    @GetMapping(value = "/{shortCode:^(?!api|privacidad|terminos|error)[a-zA-Z0-9]+$}", produces = "text/html")
     public ResponseEntity<Void> redirectToOriginalUrl(@PathVariable String shortCode) {
-        // Ignore requests for static files
-        if (shortCode.contains(".") || shortCode.equalsIgnoreCase("favicon.ico")) {
-            return ResponseEntity.notFound().build();
-        }
-
         String originalUrl = urlService.getOriginalUrl(shortCode);
 
         if (originalUrl != null && !originalUrl.isEmpty()) {
