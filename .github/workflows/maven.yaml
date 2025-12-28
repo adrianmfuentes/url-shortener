@@ -41,7 +41,7 @@ jobs:
           mvn -B clean package \
           -Dspring.profiles.active=test \
           -Dde.flapdoodle.mongodb.embedded.enabled=false \
-          -Dspring.data.mongodb.uri=mongodb://${{ secrets.MONGO_TEST_USERNAME }}:${{ secrets.MONGO_TEST_PASSWORD }}@localhost:27017/url-shortener-test?authSource=admin \
+          "-Dspring.data.mongodb.uri=mongodb://${{ secrets.MONGO_TEST_USERNAME }}:${{ secrets.MONGO_TEST_PASSWORD }}@localhost:27017/url-shortener-test?authSource=admin" \
           -DargLine="-XX:+EnableDynamicAgentLoading -Xshare:off"
 
       - name: Set up QEMU (Para soporte multi-arquitectura)
